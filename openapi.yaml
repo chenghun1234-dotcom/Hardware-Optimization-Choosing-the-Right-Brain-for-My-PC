@@ -1,0 +1,118 @@
+openapi: "3.0.3"
+info:
+  title: "Hardware-Match AI: Local LLM & Gaming Optimizer"
+  description: |
+    ## The Intelligence Layer for PC Hardware Optimization
+    
+    **Hardware-Match AI** is a sophisticated advisory API designed to bridge the gap 
+    between raw hardware specs and software performance. 
+    
+    Built for the **Local AI era**, it analyzes VRAM, RAM, and CPU cores to recommend 
+    precise **DeepSeek-R1** quantization levels and identify potential hardware bottlenecks.
+    
+    ### 🚀 Key Optimization Pillars
+    1. **AI Model Matching**: Specific model & quantization level suggestions based on VRAM.
+    2. **Gaming Tiers**: Resolution-targeted game recommendations (4K/1440p).
+    3. **Bottleneck Analysis**: Real-time detection of RAM or CPU limitations.
+    4. **Zero-Stack Infra**: High performance with zero operating costs on Vercel.
+  version: "1.0.0"
+  contact:
+    name: "Hardware-Match Support"
+    url: "https://hardware-optimization-choosing-the.vercel.app"
+  license:
+    name: "Proprietary – Commercial via RapidAPI"
+
+servers:
+  - url: "https://hardware-optimization-choosing-the.vercel.app"
+    description: "Production Server (Vercel)"
+
+tags:
+  - name: "Advisory"
+    description: "Hardware matching for AI and Gaming"
+  - name: "System"
+    description: "API health and status"
+
+paths:
+  /health:
+    get:
+      tags: ["System"]
+      summary: "API Health Check"
+      responses:
+        "200":
+          description: "Operational"
+
+  /match/ai:
+    post:
+      tags: ["Advisory"]
+      summary: "Find Optimal Local LLM & Quantization"
+      operationId: "match_ai"
+      description: |
+        Analyzes GPU VRAM and System RAM to find the best-performing locally 
+        runnable LLM (DeepSeek-R1). Includes quantization level guidance.
+      security:
+        - RapidAPIProxySecret: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/HardwareSpecs"
+      responses:
+        "200":
+          description: "AI Model Recommendation"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdvisoryResponse"
+
+  /match/games:
+    post:
+      tags: ["Advisory"]
+      summary: "Predict Gaming Performance & Compatibility"
+      operationId: "match_games"
+      description: |
+        Matches specific AAA game titles and resolution tiers to your GPU model and VRAM.
+      security:
+        - RapidAPIProxySecret: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/HardwareSpecs"
+      responses:
+        "200":
+          description: "Gaming Compatibility List"
+
+components:
+  securitySchemes:
+    RapidAPIProxySecret:
+      type: apiKey
+      name: X-RapidAPI-Proxy-Secret
+      in: header
+  schemas:
+    HardwareSpecs:
+      type: object
+      properties:
+        gpu_model:  { type: string, example: "RTX 4090" }
+        vram_gb:    { type: integer, example: 24 }
+        ram_gb:     { type: integer, example: 64 }
+        cpu_cores:  { type: integer, example: 16 }
+        target_goal: { type: string, example: "AI" }
+    
+    AdvisoryResponse:
+      type: object
+      properties:
+        status: { type: string }
+        data:
+          type: object
+          properties:
+            primary_model:
+              type: object
+              properties:
+                model: { type: string }
+                quantization: { type: string }
+                use_case: { type: string }
+            bottleneck_alerts:
+              type: array
+              items: { type: string }

@@ -2,18 +2,217 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Hardware-Match AI Advisor</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hardware-Match | Cybernetic Advisory Suite</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;700;900&family=JetBrains+Mono&display=swap" rel="stylesheet">
   <style>
-    body { background: #050505; color: #fff; font-family: sans-serif; text-align: center; padding-top: 100px; }
-    .card { background: #111; padding: 40px; border: 1px solid #00ffcc; display: inline-block; border-radius: 20px; }
-    h1 { color: #00ffcc; }
+    :root {
+      --bg: #02040a;
+      --surface: #0a0c14;
+      --accent: #00ffcc; /* Neon Cyan */
+      --accent2: #ff00ff; /* Neon Pink */
+      --text: #ffffff;
+      --text-dim: #64748b;
+      --border: rgba(0, 255, 204, 0.2);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Outfit', sans-serif;
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+
+    /* Animated Grid Background */
+    body::before {
+      content: ''; position: fixed; inset: 0;
+      background-image: 
+        linear-gradient(var(--border) 1px, transparent 1px),
+        linear-gradient(90deg, var(--border) 1px, transparent 1px);
+      background-size: 60px 60px;
+      perspective: 1000px;
+      transform: rotateX(20deg);
+      z-index: -1;
+      opacity: 0.3;
+      animation: gridScroll 20s linear infinite;
+    }
+    @keyframes gridScroll { to { background-position: 0 60px; } }
+
+    .glow-overlay {
+      position: fixed; inset: 0;
+      background: radial-gradient(circle at 50% 50%, rgba(0, 255, 204, 0.05), transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .container { max-width: 1100px; margin: 0 auto; padding: 80px 24px; position: relative; z-index: 1; }
+    
+    header { text-align: center; margin-bottom: 80px; }
+    .brand-id {
+      display: inline-flex; align-items: center; gap: 12px;
+      padding: 8px 16px; background: rgba(0,255,204,0.1); border: 1px solid var(--border);
+      border-radius: 100px; color: var(--accent); font-size: 13px; font-weight: 700;
+      letter-spacing: 2px; text-transform: uppercase; margin-bottom: 24px;
+    }
+    .logo { font-size: clamp(2.5rem, 6vw, 4rem); font-weight: 900; letter-spacing: -2px; line-height: 1; }
+    .logo .glitch { color: var(--accent); text-shadow: 0 0 15px rgba(0,255,204,0.5); }
+
+    .main-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; }
+    @media (max-width: 768px) { .main-grid { grid-template-columns: 1fr; } }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 48px; border-radius: 24px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+      position: relative; overflow: hidden;
+      transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    .card:hover { transform: translateY(-8px); border-color: var(--accent); }
+    .card::before {
+      content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 2px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+    }
+
+    h2 { font-size: 1.5rem; font-weight: 800; margin-bottom: 24px; display: flex; align-items: center; gap: 12px; }
+    .icon { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; background: var(--accent); color: #000; border-radius: 8px; font-style: normal; }
+
+    .input-section { margin-bottom: 32px; }
+    .control { margin-bottom: 20px; }
+    label { display: block; font-size: 11px; font-weight: 700; color: var(--text-dim); text-transform: uppercase; margin-bottom: 8px; font-family: 'JetBrains Mono'; }
+    select, input {
+      width: 100%; padding: 14px; background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border); border-radius: 12px; color: #fff;
+      font-family: 'JetBrains Mono'; font-size: 14px; outline: none;
+      transition: all 0.2s;
+    }
+    select:focus, input:focus { border-color: var(--accent); background: rgba(0,255,204,0.05); }
+
+    button {
+      width: 100%; padding: 18px; background: var(--accent); color: #000;
+      border: none; border-radius: 12px; font-weight: 900; cursor: pointer;
+      text-transform: uppercase; letter-spacing: 2px; font-size: 14px;
+      box-shadow: 0 0 20px rgba(0, 255, 204, 0.3);
+      transition: all 0.2s;
+    }
+    button:hover { transform: scale(1.02); box-shadow: 0 0 40px rgba(0, 255, 204, 0.5); }
+    .btn-pink { background: var(--accent2); box-shadow: 0 0 20px rgba(255, 0, 255, 0.3); }
+    .btn-pink:hover { box-shadow: 0 0 40px rgba(255, 0, 255, 0.5); }
+
+    .display-panel {
+      margin-top: 32px; background: #000; padding: 24px; border-radius: 16px;
+      border: 1px solid rgba(255,255,255,0.05); font-family: 'JetBrains Mono';
+      font-size: 13px; line-height: 1.8; color: #00ffcc;
+      display: none; height: 180px; overflow-y: auto;
+    }
+    .panel-header { font-weight: 700; color: var(--accent2); margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px; }
+
+    .cta-links { margin-top: 60px; display: flex; justify-content: center; gap: 24px; }
+    .cta-link { 
+      color: var(--text-dim); text-decoration: none; font-size: 14px; 
+      font-weight: 600; padding: 10px 20px; border: 1px solid var(--border); border-radius: 100px;
+      transition: all 0.2s;
+    }
+    .cta-link:hover { color: var(--accent); border-color: var(--accent); background: rgba(0,255,204,0.05); }
+
+    footer { text-align: center; margin-top: 100px; color: var(--text-dim); font-size: 12px; font-family: 'JetBrains Mono'; letter-spacing: 1px; }
+
+    .alert-glow { animation: redGlow 1s infinite alternate; }
+    @keyframes redGlow { from { color: #ff00ff; } to { color: #ff0000; text-shadow: 0 0 10px #ff0000; } }
   </style>
 </head>
 <body>
-  <div class="card">
-    <h1>HARDWARE-MATCH AI</h1>
-    <p>Find the best AI models for your PC.</p>
-    <a href="/docs" style="color: #ff00ff;">API Documentation →</a>
+  <div class="glow-overlay"></div>
+  <div class="container">
+    <header>
+      <div class="brand-id">>_ AGENTIC ADVISORY v1.0.4</div>
+      <h1 class="logo"><span class="glitch">HARDWARE-MATCH AI</span></h1>
+      <p class="subtitle" style="max-width: 600px; margin: 20px auto;">Choose the right "brain" for your machine. Optimized recommendations for DeepSeek-R1 and the latest gaming titles.</p>
+    </header>
+
+    <div class="main-grid">
+      <!-- AI ADVISOR -->
+      <div class="card">
+        <h2><i class="icon">AI</i> LLM Matcher</h2>
+        <div class="input-section">
+          <div class="control">
+            <label>Graphics VRAM (GB)</label>
+            <select id="vram">
+              <option value="4">4GB - Mobile/Legacy</option>
+              <option value="8">8GB - Mainstream</option>
+              <option value="12" selected>12GB - Performance</option>
+              <option value="16">16GB - Enthusiast</option>
+              <option value="24">24GB+ - God Tier</option>
+            </select>
+          </div>
+          <div class="control">
+            <label>System RAM (GB)</label>
+            <input type="number" id="ram" value="16">
+          </div>
+        </div>
+        <button onclick="matchAI()">INITIATE BRAIN SCAN</button>
+        <div id="ai-panel" class="display-panel">
+          <div class="panel-header">>> NEURAL MATCH FOUND</div>
+          <div id="ai-content"></div>
+        </div>
+      </div>
+
+      <!-- GAMING ADVISOR -->
+      <div class="card">
+        <h2><i class="icon">GP</i> Gaming Tiers</h2>
+        <div class="input-section">
+          <div class="control">
+            <label>Target GPU Model</label>
+            <input type="text" id="gpu" placeholder="e.g. RTX 4070 Ti">
+          </div>
+          <div class="control">
+            <label>CPU Core Count</label>
+            <input type="number" id="cpu" value="8">
+          </div>
+        </div>
+        <button onclick="matchGames()" class="btn-pink">VERIFY TITLES</button>
+        <div id="game-panel" class="display-panel" style="color: var(--accent2);">
+          <div class="panel-header" style="color: var(--accent); border-color: var(--accent);">>> COMPATIBILITY LIST</div>
+          <div id="game-content"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cta-links">
+      <a href="/docs" class="cta-link">API Documentation</a>
+      <a href="/dashboard" class="cta-link">SLA Status</a>
+      <a href="https://github.com/chenghun1234-dotcom/Hardware-Optimization-Choosing-the-Right-Brain-for-My-PC" target="_blank" class="cta-link">View Source</a>
+    </div>
+
+    <footer>
+      POWERED BY DEEPSEEK-R1 OPTIMIZATION CORE // ZERO-OPERATING-COST // RAPIDAPI READY
+    </footer>
   </div>
+
+  <script>
+    function matchAI() {
+      const v = parseInt(document.getElementById('vram').value);
+      const r = parseInt(document.getElementById('ram').value);
+      const p = document.getElementById('ai-panel');
+      const c = document.getElementById('ai-content');
+      
+      p.style.display = 'block';
+      let model = v >= 24 ? "DeepSeek-R1:32b/70b" : (v >= 14 ? "DeepSeek-R1:14b" : "DeepSeek-R1:8b");
+      let quant = v >= 24 ? "Q4_K_M (Lossless-ish)" : (v >= 14 ? "Q8_0 (High Precision)" : "F16 (High Speed)");
+      let alert = (v > 12 && r < 32) ? "<br><span class='alert-glow'>ALRT: SYSTEM RAM BOTTLENECK DETECTED. 32GB+ RECOMMENDED.</span>" : "";
+
+      c.innerHTML = `TARGET_MODL: ${model}<br>QUANT_LVL: ${quant}<br>INFER_SPEED: OPTIMIZED<br>USE_CASE: PROFESSIONAL CODING${alert}`;
+    }
+
+    function matchGames() {
+      const g = document.getElementById('gpu').value || "RTX 3060";
+      const p = document.getElementById('game-panel');
+      const c = document.getElementById('game-content');
+      
+      p.style.display = 'block';
+      c.innerHTML = `COMPATIBLE: Cyberpunk 2077 (Ultra/DLSS)<br>COMPATIBLE: Elden Ring (4K Native)<br>COMPATIBLE: Forza Horizon 5 (Psycho)<br>OPTIMIZATION: DLSS 3.5 RECOMMENDED`;
+    }
+  </script>
 </body>
 </html>

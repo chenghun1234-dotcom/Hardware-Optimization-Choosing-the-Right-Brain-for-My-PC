@@ -52,6 +52,6 @@ async def health():
 
 @app.get("/ping", tags=["System"], include_in_schema=False)
 async def ping():
-    return "pong"
+    return {"status": "pong"}
 
 app.include_router(core_router)

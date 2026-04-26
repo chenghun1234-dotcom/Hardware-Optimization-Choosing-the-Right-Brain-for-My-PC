@@ -50,4 +50,8 @@ async def dashboard_page():
 async def health():
     return {"status": "operational", "version": "1.0.0"}
 
+@app.get("/ping", tags=["System"], include_in_schema=False)
+async def ping():
+    return "pong"
+
 app.include_router(core_router)
